@@ -1,0 +1,195 @@
+---
+title: "Predicting Insurgency Trends- Conflict Time Series"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+
+
+```{r}
+library(readr)
+fatalities <- read_csv("fatalities.csv", col_names = FALSE)
+#barplot(fatalities)
+fatalities <- ts(fatalities, start = c(2002,1), end=c(2017,12),frequency=12)
+#par(mfrow=c(1,2))
+plot.ts(fatalities, ylab="Fatalaties", col="orange", lwd=2,
+        main="Death Count due to Insurgency in Jammu & Kashmir")
+
+```
+
+
+```{R}
+plot(decompose(fatalities))
+```
+
+```{R}
+log_fatalities <- log(fatalities)
+par(mfrow=c(1,2))
+boxplot(fatalities~floor(time(fatalities)), col= "skyblue",
+        main = "Original Series")
+boxplot(log_fatalities~floor(time(log_fatalities)), col= "tomato",
+        main="Log-transfomred Series")
+
+```
+
+```{R}
+plot.ts(log_fatalities, ylab="Fatalaties", col="royalblue", lwd=2,
+        main="Death Count due to Insurgency in Jammu & Kashmir")
+monthplot(log_fatalities)
+```
+
+
+```{R}
+d1log_fatalities <- diff(log_fatalities,1)
+plot.ts(d1log_fatalities, ylab="Fatalaties", col="orange", lwd=2,
+        main="Death Count due to Insurgency in Jammu & Kashmir")
+abline(h=0, lty=2, col="darkgreen", lwd=2)
+```
+
+```{R}
+par(mfrow=c(1,2))
+acf(diff(d1log_fatalities,12),ylim=c(-1,1),col=c(2,rep(1,11)),lwd=1,lag.max=84)
+pacf(diff(d1log_fatalities,12),ylim=c(-1,1),col=c(rep(1,11),2),lwd=1,lag.max=84)
+```
+
+```{R}
+# fitting the ARIMA(1,0,1)
+mod <- arima(log_fatalities, order = c(0,1,3), seasonal=list(order=c(2,1,0),period=12))
+
+```
+
+
+
+```{R}
+##### Previsions a llarg termini amb el model complet ######
+ultim <- c(2016,12)
+pred=predict(mod,n.ahead=12)
+pr<-ts(c(tail(log_fatalities,1),pred$pred),start=ultim+c(1,0),freq=12)
+se<-ts(c(0,pred$se),start=ultim+c(1,0),freq=12)
+
+#Intervals
+tl1<-ts(exp(pr-1.96*se),start=ultim+c(1,0),freq=12)
+tu1<-ts(exp(pr+1.96*se),start=ultim+c(1,0),freq=12)
+pr1<-ts(exp(pr),start=ultim+c(1,0),freq=12)
+
+ts.plot(fatalities,tl1,tu1,pr1,lty=c(1,2,2,1),col=c(1,4,4,2),xlim=c(ultim[1]-2,ultim[1]+3),type="o",main="Model ARIMA(1,0,1)", ylim = c(0,100))
+abline(v=(ultim[1]-2):(ultim[1]+3),lty=3,col=4)
+```
+
+```{R}
+
+```
+
+```{R forecasting using holtwinters}
+#options(warn = 0)
+#install.packages("forecast")
+library(forecast)
+library(TTR)
+insurgency_fit <- HoltWinters(log_fatalities)
+plot(insurgency_fit)
+
+insurgency_forecasts <- forecast:::forecast.HoltWinters(insurgency_fit, h=36)
+forecast:::plot.forecast(insurgency_forecasts, col = "tomato", lwd=2, 
+                         main = "Insurgency Forecast for 2018-20", fcol = "navyblue",
+                         xlab = expression("Machine Intelligence Unit (Project Victor Sierra)"))
+```
+
+
+```{R}
+print(exp(insurgency_forecasts$mean))
+```
+
+1. SQRT trnasformation
+2. 
+
+```{R model_validation}
+
+d1d12serie <- diff(diff(log_fatalities,12),1)
+
+validation=function(model,dades){
+  s=frequency(get(model$series))
+  resid=model$residuals
+  par(mfrow=c(2,2),mar=c(3,3,3,3))
+  #Residuals plot
+  plot(resid,main="Residuals")
+  abline(h=0)
+  abline(h=c(-3*sd(resid),3*sd(resid)),lty=3,col=4)
+  #Square Root of absolute values of residuals (Homocedasticity)
+  scatter.smooth(sqrt(abs(resid)),main="Square Root of Absolute residuals",
+                 lpars=list(col=2))
+  
+  #Normal plot of residuals
+  qqnorm(resid)
+  qqline(resid,col=2,lwd=2)
+  
+  ##Histogram of residuals with normal curve
+  hist(resid,breaks=20,freq=F)
+  curve(dnorm(x,mean=mean(resid),sd=sd(resid)),col=2,add=T)
+  
+  
+  #ACF & PACF of residuals
+  par(mfrow=c(1,2))
+  acf(resid,ylim=c(-1,1),lag.max=60,col=c(2,rep(1,s-1)),lwd=1)
+  pacf(resid,ylim=c(-1,1),lag.max=60,col=c(rep(1,s-1),2),lwd=1)
+  par(mfrow=c(1,1))
+  
+  #ACF & PACF of square residuals 
+  par(mfrow=c(1,2))
+  acf(resid^2,ylim=c(-1,1),lag.max=60,col=c(2,rep(1,s-1)),lwd=1)
+  pacf(resid^2,ylim=c(-1,1),lag.max=60,col=c(rep(1,s-1),2),lwd=1)
+  par(mfrow=c(1,1))
+  
+  #Ljung-Box p-values
+  par(mar=c(2,2,1,1))
+  tsdiag(model,gof.lag=7*s)
+  cat("\n--------------------------------------------------------------------\n")
+  print(model)
+  
+  #Stationary and Invertible
+  cat("\nModul of AR Characteristic polynomial Roots: ", 
+      Mod(polyroot(c(1,-model$model$phi))),"\n")
+  cat("\nModul of MA Characteristic polynomial Roots: ",
+      Mod(polyroot(c(1,model$model$theta))),"\n")
+  
+  #Model expressed as an MA infinity (psi-weights)
+  psis=ARMAtoMA(ar=model$model$phi,ma=model$model$theta,lag.max=36)
+  names(psis)=paste("psi",1:36)
+  cat("\nPsi-weights (MA(inf))\n")
+  cat("\n--------------------\n")
+  print(psis[1:20])
+  
+  #Model expressed as an AR infinity (pi-weights)
+  pis=-ARMAtoMA(ar=-model$model$theta,ma=-model$model$phi,lag.max=36)
+  names(pis)=paste("pi",1:36)
+  cat("\nPi-weights (AR(inf))\n")
+  cat("\n--------------------\n")
+  print(pis[1:20])
+  
+  ##Shapiro-Wilks Normality test
+  print(shapiro.test(resid(mod)))
+  
+  #Sample ACF vs. Teoric ACF
+  par(mfrow=c(2,2),mar=c(3,3,3,3))
+  acf(dades, ylim=c(-1,1) ,lag.max=36,main="Sample ACF")
+  
+  plot(ARMAacf(model$model$phi,model$model$theta,lag.max=36),ylim=c(-1,1), 
+       type="h",xlab="Lag",  ylab="", main="ACF Teoric")
+  abline(h=0)
+  
+  #Sample PACF vs. Teoric PACF
+  pacf(dades, ylim=c(-1,1) ,lag.max=36,main="Sample PACF")
+  
+  plot(ARMAacf(model$model$phi,model$model$theta,lag.max=36, pacf=T),ylim=c(-1,1),
+       type="h", xlab="Lag", ylab="", main="PACF Teoric")
+  abline(h=0)
+  par(mfrow=c(1,1))
+}
+validation(mod, d1d12serie)
+```
+
+```{r}
+
+```
