@@ -25,7 +25,7 @@ Syntax highlighted code block
 
 [Link](url) and ![Main Photo](https://www.facebook.com/photo/download/?fbid=1870837259653282&ext=1523803682&hash=AeS1c_FD-IgX9Q3W)
 ```
-
+![Main Photo](https://www.facebook.com/photo.php?fbid=1870837259653282&set=pcb.1870838172986524&type=3&theater)
 For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
 
 ### Jekyll Themes
