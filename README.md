@@ -6,8 +6,7 @@ Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://j
 
 ### Markdown
 
-![Insurgency Forecasts for the 2018](https://github.com/ankitbit/COMP-COIN/blob/master/images/29694626_1870837259653282_3503950039716170886_n.jpg)
-
+![useful image]({{github.com/ankitbit/COMP-COIN}}/assets/29694626_1870837259653282_3503950039716170886_n.jpg)
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
