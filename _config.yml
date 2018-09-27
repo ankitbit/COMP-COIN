@@ -1,6 +1,5 @@
 theme: jekyll-theme-minimal
 title: [The title of your site]
 description: [A short description of your site's purpose]
-logo: [Location of the logo]
-show_downloads: ["true" or "false" to indicate whether to provide a download URL]
-
+logo: images/29694626_1870837259653282_3503950039716170886_n.jpg
+show_downloads: true
