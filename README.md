@@ -1,7 +1,8 @@
-# Welcome to the webpage of Project!
 ![useful image](/images/Government_1_b.jpg)
-## The Team?
-We are a group of Academicians, Data Scientists, Mathematicians, Statisticians, Psychologists, Criminologists, Software Developers 
+
+| The Team |
+|:-----------:|
+|We are a group of Academicians, Data Scientists, Mathematicians, Statisticians, Psychologists, Criminologists, Software Developers|
 
 ## What is Project COMP-COIN?
 etc etc. trying to measure uniquely the fingerprints of the extremist outfits operating in a region by means of tools from the domain of Artificial Intelligence. 
