@@ -2,3 +2,4 @@ theme: jekyll-theme-minimal
 title: Computational Methods for Counter Intelligence
 description: The Project COMP-COIN (Computational Methods for Counter Intelligence) is a multinational academic initiative aimed at studying the unique fingerprints of extremist outfits using tools from the domain of Artificial Intelligence
 show_downloads: false
+footer: false
