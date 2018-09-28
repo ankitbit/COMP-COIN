@@ -1,4 +1,4 @@
-![useful image](/images/Government_1_b.jpg)
+![useful image](/images/Delhi.png)
 
 | The Team |
 |:-----------:|
