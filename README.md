@@ -11,4 +11,4 @@
 
 | Collaborators |
 |:-----------:|
-![](images/collaborators.png)
+|![](images/collaborators.png)|
