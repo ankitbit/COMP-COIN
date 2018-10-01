@@ -2,7 +2,7 @@
 
 | The Team |
 |:-----------:|
-|We are a group of Academicians, Data Scientists, Mathematicians, Statisticians, Psychologists, Criminologists, Software Developers, Forensic Experts, Lawyers etc on a mission to save the world from the emerging threat of terrorism by using the tools from the domain of Artifical Intelligence|
+|We are a small group of Academicians, Data Scientists, Criminologists on a mission to save the world from the emerging threat of terrorism by using the tools from the domain of Artifical Intelligence|
 
 | What are the objectives of this study? |
 |:-----------:|
